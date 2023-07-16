@@ -12,7 +12,6 @@ def load_xml(id):
     r = requests.get(
         'https://app.metasail.it/(S(usryiluj43x0xh10ztf4whfp))/MetaSailWS.asmx/getStatistiche?idgara=' + str(id))
     src = r.text
-    print('load_xml')
     # remove namespace
     tree = ET.iterparse(StringIO(src))
     for _, el in tree:
@@ -22,7 +21,7 @@ def load_xml(id):
 
     root = tree.root
 
-    df_cols = ['id', 'nom', 'long_parcours', 'dist_parcouru', 'temps_total']
+    df_cols = ['id', 'nom', 'long_parcours', 'dist_parcouru', 'temps_total', 'nb_segments']
 
     def add_row(colname, value, row):
         row[colname] = value
@@ -37,7 +36,9 @@ def load_xml(id):
             'long_parcours': int(node.find('TotLungLato').text) if node is not None else None,
             'dist_parcouru': int(node.find('TotDistPerc').text) if node is not None else None,
             'temps_total': int(node.find('TotTempPerc').text) if node is not None else None,
+            'nb_segments': len(node.find('lstSegments'))
         }
+        
         curr_segment = 1
         for segment in node.find('lstSegments').iter('cInfoRaceSegment'):
             add_row('s' + str(curr_segment) + '_topspeed',
@@ -62,7 +63,6 @@ def load_xml(id):
         rows.append(row)
 
     df = pd.DataFrame(rows, columns=df_cols)
-    df.set_index('id', inplace=True)
 
     return df
 
@@ -75,7 +75,7 @@ def get_race_list(id):
     c = r.text.removeprefix("b'").removesuffix("'")
 
     soup = BeautifulSoup(c, 'html.parser')
-    data = []
+    data = [{'text': '', 'idrace': -1, 'url': '',  'id': -1}]
 
     for a in soup.find_all('a', href=True):
         if 'metasail.it' in a['href']:

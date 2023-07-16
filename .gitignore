@@ -1,2 +1,5 @@
 /.ipynb_checkpoints
 /.venv
+/utils/__pycache__
+.xml
+.pyc
