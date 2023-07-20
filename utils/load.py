@@ -9,62 +9,42 @@ import streamlit as st
 
 @st.cache_data
 def load_xml(id):
-    r = requests.get(
-        'https://app.metasail.it/(S(usryiluj43x0xh10ztf4whfp))/MetaSailWS.asmx/getStatistiche?idgara=' + str(id))
-    src = r.text
-    # remove namespace
-    tree = ET.iterparse(StringIO(src))
-    for _, el in tree:
-        prefix, has_namespace, postfix = el.tag.partition('}')
-        if has_namespace:
-            el.tag = postfix
+	r = requests.get(
+			'https://app.metasail.it/(S(usryiluj43x0xh10ztf4whfp))/MetaSailWS.asmx/getStatistiche?idgara=' + str(id))
+	src = r.text
+	# remove namespace
+	tree = ET.iterparse(StringIO(src))
+	for _, el in tree:
+			prefix, has_namespace, postfix = el.tag.partition('}')
+			if has_namespace:
+					el.tag = postfix
 
-    root = tree.root
+	root = tree.root
+	rows = []
+	for node in root:
+		curr_segment = 1
+		for segment in node.find('lstSegments').iter('cInfoRaceSegment'):
+			row = {
+				'id': node.find('Seriale').text if node is not None else None,
+				'nom': node.find('Nome').text if node is not None else None,
+				'long_parcours': int(node.find('TotLungLato').text) if node is not None else None,
+				'dist_parcouru': int(node.find('TotDistPerc').text) if node is not None else None,
+				'temps_total': int(node.find('TotTempPerc').text) if node is not None else None,
+			}
+			row['s_topspeed'] = float(segment.find('TopSpeed').text)
+			row['s_topvmg'] = float(segment.find('TopVMG').text)
+			row['s_avgspeed'] = float(segment.find('AvgSpeed').text)
+			row['s_tempsgauche'] = int(segment.find('CrtRaceSegSX').text)
+			row['s_tempsdroite'] = int(segment.find('CrtRaceSegDX').text)
+			row['s_tempssursegment'] = int(segment.find('TimeSecPercorsi').text)
+			row['s_distancesursegment'] = int(segment.find('SegDistRealePercorsa').text)
+			row['s_longueursegment'] = int(segment.find('LungLato').text)
+			row['s_rankentersegment'] = int(segment.find('SegEnteredRank').text)
+			row['s_leg'] = curr_segment
+			rows.append(row)
+			curr_segment += 1
 
-    df_cols = ['id', 'nom', 'long_parcours', 'dist_parcouru', 'temps_total', 'nb_segments']
-
-    def add_row(colname, value, row):
-        row[colname] = value
-        if colname not in df_cols:
-            df_cols.append(colname)
-
-    rows = []
-    for node in root:
-        row = {
-            'id': node.find('Seriale').text if node is not None else None,
-            'nom': node.find('Nome').text if node is not None else None,
-            'long_parcours': int(node.find('TotLungLato').text) if node is not None else None,
-            'dist_parcouru': int(node.find('TotDistPerc').text) if node is not None else None,
-            'temps_total': int(node.find('TotTempPerc').text) if node is not None else None,
-            'nb_segments': len(node.find('lstSegments'))
-        }
-        
-        curr_segment = 1
-        for segment in node.find('lstSegments').iter('cInfoRaceSegment'):
-            add_row('s' + str(curr_segment) + '_topspeed',
-                    float(segment.find('TopSpeed').text), row)
-            add_row('s' + str(curr_segment) + '_topvmg',
-                    float(segment.find('TopVMG').text), row)
-            add_row('s' + str(curr_segment) + '_avgspeed',
-                    float(segment.find('AvgSpeed').text), row)
-            add_row('s' + str(curr_segment) + '_tempsgauche',
-                    int(segment.find('CrtRaceSegSX').text), row)
-            add_row('s' + str(curr_segment) + '_tempsdroite',
-                    int(segment.find('CrtRaceSegDX').text), row)
-            add_row('s' + str(curr_segment) + '_tempssursegment',
-                    int(segment.find('TimeSecPercorsi').text), row)
-            add_row('s' + str(curr_segment) + '_distancesursegment',
-                    int(segment.find('SegDistRealePercorsa').text), row)
-            add_row('s' + str(curr_segment) + '_longueursegment',
-                    int(segment.find('LungLato').text), row)
-            add_row('s' + str(curr_segment) + '_rankentersegment',
-                    int(segment.find('SegEnteredRank').text), row)
-            curr_segment += 1
-        rows.append(row)
-
-    df = pd.DataFrame(rows, columns=df_cols)
-
-    return df
+	return pd.DataFrame(rows, columns=[k for k in rows[0]])
 
 
 @st.cache_data
