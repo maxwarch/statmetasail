@@ -117,7 +117,7 @@ class DrawGraph:
 				legend=dict(
 					orientation="h",
 					yanchor="bottom",
-					y=1.08,
+					y=1.1,
 					xanchor="right",
 					x=1
 				),
