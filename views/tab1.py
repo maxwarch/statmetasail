@@ -7,14 +7,14 @@ import math
 def render_tab1(tab, df, selected_coureurs):
 	selection = df[df.id.isin(selected_coureurs)]
 	max = selection.s_leg.max()
-	nb_col = st.number_input('Nombre de colonne (' + str(max) + ' max)', min_value=1, max_value=max, value=2)
+	nb_col = tab.number_input('Nombre de colonne (' + str(max) + ' max)', min_value=1, max_value=max, value=2)
 	graph = DrawGraph(df, selection)
 	try:
 		figs = graph.change_graph(fig_cols=nb_col)
-		cols = st.columns(nb_col)
 
 		index = 1
 		with tab:
+			cols = st.columns(nb_col)
 			for rowidx in range(len(figs)):
 				graph_index = 0
 				for col in cols:

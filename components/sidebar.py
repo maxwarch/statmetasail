@@ -29,7 +29,7 @@ def render_sb_multiselect_coureurs(df):
       st.session_state.coureurs = c.tolist()
 
   selected_coureurs = st.sidebar.multiselect(
-      'Coureurs',
+      'Sélectionner des coureurs (8 max)',
       dfunique,
       max_selections=8,
       format_func=lambda x: df[df.id == str(x)].nom.unique()[0],
