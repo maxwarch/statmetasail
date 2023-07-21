@@ -37,8 +37,8 @@ class DrawGraph:
 	def add_graph(self, index):
 		try:
 			general = self.df[self.df.s_leg == int(index)]
-			if general.empty:
-				return None
+			#if general.empty:
+			#	return None
 			
 			mean_speed = np.nanmean(general['s_avgspeed'])
 			long_segment = np.nanmean(general['s_longueursegment'])
