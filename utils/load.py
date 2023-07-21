@@ -14,6 +14,7 @@ def load_xml(id):
 	src = r.text
 	# remove namespace
 	tree = ET.iterparse(StringIO(src))
+	
 	for _, el in tree:
 			prefix, has_namespace, postfix = el.tag.partition('}')
 			if has_namespace:
@@ -44,7 +45,7 @@ def load_xml(id):
 			rows.append(row)
 			curr_segment += 1
 
-	return pd.DataFrame(rows, columns=[k for k in rows[0]])
+	return pd.DataFrame(rows, columns=[k for k in rows[0]]) if len(rows) > 0 else None
 
 
 @st.cache_data
