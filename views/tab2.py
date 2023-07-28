@@ -7,7 +7,7 @@ import math
 
 def render_tab2(tab, df):
 	max = df.s_leg.max()
-	nb_col = tab.number_input('Nombre de colonne (' + str(max) + ' max)', min_value=1, max_value=max, value=1)
+	nb_col = 1	#tab.number_input('Nombre de colonne (' + str(max) + ' max)', min_value=1, max_value=max, value=1)
 	graph = DrawGraph(df)
 	try:
 		figs = graph.add_graph(nb_col)
