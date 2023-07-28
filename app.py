@@ -21,7 +21,7 @@ if selected_race != -1:
         if len(selected_coureurs) > 0:
             tab1, tab2 = st.tabs(["Par segment", "Global"])
             #render_tab1(tab1, df, selected_coureurs)
-            render_tab2(tab2, df, selected_coureurs)
+            render_tab2(tab2, df)
         else:
             st.write(':arrow_left: Choisissez des coureurs')
     else:
