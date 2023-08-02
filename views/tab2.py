@@ -47,49 +47,43 @@ class DrawGraph:
 			})
 			
 		df = pd.DataFrame(data)
-		fig, axs = plt.subplots(1, 2, figsize=(12, 3))
+		fig, ax = plt.subplots(figsize=(12, 3))
 
 		width = 0.25
 		pos = np.arange(0, df.shape[0])
 
-		ax1 = plt.twinx(axs[0])
-		axs[0].set_xticks(pos)
-		axs[0].set_xticklabels(df['rank'].values, rotation=45)
-		axs[0].set_xlabel('Position')
-		axs[0].set_ylabel('Vitesse')
-		axs[0].set_facecolor('none')
-		ax1.grid(axis='y')
-		ax1.set_ylabel('% côté')
+		ax.set_xticks(pos)
+		ax.set_xticklabels(df['rank'].values, rotation=45)
+		ax.set_xlabel('Position')
+		ax.set_ylabel('Vitesse')
+		ax.set_facecolor('none')
 
-		ax2 = plt.twinx(axs[1])
-		axs[1].set_xticks(pos)
-		axs[1].set_xticklabels(df['rank'].values, rotation=45)
-		axs[1].set_xlabel('Position')
-		axs[1].set_ylabel('Distance')
-		axs[1].set_facecolor('none')
-		ax2.grid(axis='y')
+		ax1 = ax.twinx()
+		ax1.set_ylabel('Distance')
+
+		ax2 = ax.twinx()
 		ax2.set_ylabel('% côté')
+		ax2.spines.right.set_position(("axes", 1.1))
+		#ax2.grid(axis='y')
 
-		lns = []
 		# vitesse
-		lns.append(axs[0].plot(pos, df.vmoy, label="Vitesse", color="#dde02d", linewidth=3, zorder=1))
-		lns.append(ax1.bar(pos - (width / 2), df.tgauche, label="% gauche", width=width, zorder=10))
-		lns.append(ax1.bar(pos + (width / 2), df.tdroite, label="% droite", width=width, zorder=10))
-		lines, labels = axs[0].get_legend_handles_labels()
-		lines2, labels2 = ax1.get_legend_handles_labels()
-		axs[0].legend(lines + lines2, labels + labels2, loc=0)
+		ax.plot(pos, df.vmoy, label="Vitesse", color="#0b709c", linewidth=3)
+		ax1.plot(pos, df.dmoy, label="Distance", color="#f27d0f", linewidth=3)
+		ax2.bar(pos - (width / 2), df.tgauche, label="% gauche", color="#c93532", width=width)
+		ax2.bar(pos + (width / 2), df.tdroite, label="% droite", color="#1e8f5a", width=width)
 
-		lns = []
-		# distance
-		lns.append(axs[1].plot(pos, df.dmoy, label="Distance", color="#dde02d", linewidth=3, zorder=1))
-		lns.append(ax2.bar(pos - (width / 2), df.tgauche, label="% gauche", width=width, zorder=10))
-		lns.append(ax2.bar(pos + (width / 2), df.tdroite, label="% droite", width=width, zorder=10))
-		lines, labels = axs[1].get_legend_handles_labels()
+		lines, labels = ax.get_legend_handles_labels()
+		lines1, labels1 = ax1.get_legend_handles_labels()
 		lines2, labels2 = ax2.get_legend_handles_labels()
-		axs[1].legend(lines + lines2, labels + labels2, loc=0)
 
-		axs[0].set_zorder(10)
-		axs[1].set_zorder(10)
+		tkw = dict(size=2, width=1)
+		ax.tick_params(axis='y', colors=lines[0].get_color(), **tkw)
+		ax1.tick_params(axis='y', colors=lines1[0].get_color(), **tkw)
+		
+		ax.legend(lines + lines1 + lines2, labels + labels1 + labels2, loc=0)
+
+		ax.set_zorder(10)
+		ax1.set_zorder(9)
 		fig.suptitle('Leg ' + str(index))
 		fig.tight_layout()
 		return fig
