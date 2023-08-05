@@ -36,9 +36,10 @@ class DrawGraph:
 		nb = 1
 		data = []
 		for group in range(nb, len(df_leg), 5):
-			sel = df_leg.iloc[group:group + 5]
+			gp = group + 1 if group > 1 else group
+			sel = df_leg.iloc[gp:group + 5]
 			data.append({
-				'rank': str(group) + ' - ' + str(group + 5),
+				'rank': str(gp) + ' - ' + str(group + 5),
 				'vmoy': sel.s_avgspeed.mean(),
 				'dmoy': sel.s_distancesursegment.mean(),
 				'tdroite': sel.s_tempsdroite.mean(),
@@ -78,7 +79,9 @@ class DrawGraph:
 
 		tkw = dict(size=2, width=1)
 		ax.tick_params(axis='y', colors=lines[0].get_color(), **tkw)
+		ax.yaxis.label.set_color(lines[0].get_color())
 		ax1.tick_params(axis='y', colors=lines1[0].get_color(), **tkw)
+		ax1.yaxis.label.set_color(lines1[0].get_color())
 		
 		ax.legend(lines + lines1 + lines2, labels + labels1 + labels2, loc=0)
 
