@@ -5,7 +5,7 @@ selected_race = -1
 race_list = []
 
 def render_sb():
-  id_race = st.sidebar.text_input("Indiquez l'id de la régate", value="428")
+  id_race = st.sidebar.text_input("Indiquez l'id de la régate", value="428", disabled="true")
 
   if id_race != "":
       race_list = get_race_list(id_race)
